@@ -1,25 +1,22 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../../../lib/supabase';
-import { useRouter } from 'next/navigation';
-import type { User } from '@supabase/supabase-js'; // ✅ Add this line
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Dashboard() {
-  const [user, setUser] = useState<User | null>(null); // ✅ Fix typing here
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    async function getUser() {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) {
-        router.push('/login');
-      } else {
-        setUser(data.user);
-      }
+    if (!loading && !user) {
+      router.push("/login");
     }
-    getUser();
-  }, []);
+  }, [loading, user, router]);
 
-  if (!user) return <p>Loading dashboard...</p>;
+  if (loading || !user) {
+    return <p>Loading dashboard...</p>;
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
