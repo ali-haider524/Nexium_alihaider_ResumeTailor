@@ -7,19 +7,19 @@ export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <main className="min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center px-6 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-orange-100 text-gray-900 flex flex-col items-center justify-center px-6 py-12">
       <div className="text-center max-w-2xl">
         <Image
-          src="/logo.png"
+          src="/logo.png" // Make sure this image is placed in /public/logo.png
           alt="Resume Tailor"
           width={120}
           height={120}
           className="mx-auto mb-6"
         />
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-          Tailor Your Resume with AI
+        <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-gray-900">
+          Tailor Your Resume with <span className="text-orange-500">AI</span>
         </h1>
-        <p className="text-lg text-gray-600 mb-8">
+        <p className="text-lg text-gray-700 mb-8">
           Instantly generate and personalize resumes that get noticed.
         </p>
         <button
@@ -56,8 +56,8 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="p-6 border rounded-lg shadow-sm hover:shadow-md transition">
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition text-center">
+      <h3 className="text-xl font-semibold mb-2 text-gray-800">{title}</h3>
       <p className="text-gray-600 text-sm">{description}</p>
     </div>
   );
