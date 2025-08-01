@@ -1,34 +1,35 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { auth } from "@/lib/firebase";
 
-export default function Dashboard() {
-  const { user, loading } = useAuth();
+export default function DashboardPage() {
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [loading, user, router]);
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      } else {
+        setUser(user);
+      }
+    });
+    return () => unsub();
+  }, []);
 
-  if (loading || !user) {
-    return <p>Loading dashboard...</p>;
-  }
+  if (!user) return null;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Welcome, {user.email}</h1>
-      <div className="bg-white rounded shadow p-4">
-        <p>Your tailored resumes will appear here.</p>
-      </div>
       <button
-        onClick={() => router.push('/resume/new')}
-        className="mt-6 bg-orange-500 text-white px-4 py-2 rounded"
+        className="bg-red-600 text-white px-4 py-2 rounded"
+        onClick={() => signOut(auth)}
       >
-        + New Resume
+        Logout
       </button>
     </div>
   );

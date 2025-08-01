@@ -1,95 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { auth } from "@/lib/firebase";
+import {
+  signInWithEmailLink,
+  isSignInWithEmailLink,
+} from "firebase/auth";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
-export default function LandingPage() {
-  const [isDark, setIsDark] = useState(false);
+export default function MagicPage() {
   const router = useRouter();
 
-  // Load saved theme on page load
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    const prefersDark = storedTheme === "dark";
-    setIsDark(prefersDark);
-    document.documentElement.classList.toggle("dark", prefersDark);
+    let email = window.localStorage.getItem("emailForSignIn");
+    if (!email) {
+      email = window.prompt("Please enter your email to complete login") || "";
+    }
+
+    if (!email || !isSignInWithEmailLink(auth, window.location.href)) {
+      alert("Invalid login link or missing email.");
+      return;
+    }
+
+    signInWithEmailLink(auth, email, window.location.href)
+      .then(() => {
+        window.localStorage.removeItem("emailForSignIn");
+        router.push("/dashboard");
+      })
+      .catch((err) => {
+        alert("Login failed. Please try again.");
+        console.error("Magic link error:", err);
+      });
   }, []);
 
-  // Toggle and save theme
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    localStorage.setItem("theme", newTheme ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", newTheme);
-  };
-
   return (
-    <main className="min-h-screen transition-colors duration-300 bg-gradient-to-br from-white to-orange-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white flex flex-col items-center justify-center px-6 py-12 relative">
-      {/* Theme Toggle */}
-      <button
-        onClick={toggleTheme}
-        className="absolute top-6 right-6 bg-gray-200 dark:bg-gray-700 text-sm px-3 py-1 rounded shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-      >
-        {isDark ? "🌞 Light Mode" : "🌙 Dark Mode"}
-      </button>
-
-      {/* Logo and Title */}
-      <div className="text-center max-w-2xl">
-        <Image
-          src="/logo.png"
-          alt="Resume Tailor"
-          width={120}
-          height={120}
-          className="mx-auto mb-6"
-        />
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-          Tailor Your Resume with{" "}
-          <span className="text-orange-500 dark:text-orange-400">AI</span>
-        </h1>
-        <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
-          Instantly generate and personalize resumes that get noticed.
-        </p>
-        <button
-          onClick={() => router.push("/login")}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded text-lg transition shadow"
-        >
-          Get Started / Login
-        </button>
-      </div>
-
-      {/* Features Section */}
-      <section className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl w-full px-6">
-        <FeatureCard
-          title="AI Powered"
-          description="Smart resume builder that tailors your CV to job descriptions using AI."
-        />
-        <FeatureCard
-          title="Secure Login"
-          description="Your data is safe and accessible only by you. Powered by Firebase Magic Link."
-        />
-        <FeatureCard
-          title="Professional Layouts"
-          description="Clean, modern designs optimized for ATS and hiring managers."
-        />
-      </section>
-    </main>
-  );
-}
-
-function FeatureCard({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md transition text-center">
-      <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
-        {title}
-      </h3>
-      <p className="text-gray-600 dark:text-gray-300 text-sm">{description}</p>
+    <div className="min-h-screen flex items-center justify-center text-center p-4">
+      <p className="text-lg text-gray-800 dark:text-gray-100">
+        Verifying magic link, please wait...
+      </p>
     </div>
   );
 }

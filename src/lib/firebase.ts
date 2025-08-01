@@ -1,27 +1,22 @@
-// src/lib/firebase.ts
-
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
-
-
 const firebaseConfig = {
-  apiKey: "AIzaSyCriAb3gkDgK-eOdCRonx0eXA0jkDpb2x8",
-  authDomain: "resume-tailor-f2a49.firebaseapp.com",
-  projectId: "resume-tailor-f2a49",
-  storageBucket: "resume-tailor-f2a49.firebasestorage.app",
-  messagingSenderId: "171375354062",
-  appId: "1:171375354062:web:5b489b77c9e0d31f07f09f",
-  measurementId: "G-1LWG656LE1"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID!,
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Only load analytics on client side
 let analytics: ReturnType<typeof getAnalytics> | undefined = undefined;
 if (typeof window !== "undefined") {
   isSupported().then((yes) => {
@@ -32,3 +27,5 @@ if (typeof window !== "undefined") {
 }
 
 export { app, auth, db, analytics };
+
+console.log("✅ API KEY LOADED:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
